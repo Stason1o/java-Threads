@@ -1,7 +1,6 @@
 package thread;
 
 public class SumMatrix implements Runnable{
-    static String SumGlobal;
     static int row , col;
     static int matrix[][];
     int id;
@@ -52,22 +51,24 @@ public class SumMatrix implements Runnable{
                 }catch(InterruptedException ex){}
             }
             else synchronized(eye){
+                    countProc = 0;
                     eye.notifyAll();
                 }
             System.out.println("Thread [" + id + "] started updating matrix (" + (j + 1) + ")");
             for(int i = 1; i < row - 1; i++)
                 matrix[id][i] = tmp[i];
             System.out.println("Thread [" + id + "] finished updating matrix (" + (j + 1) + ")");
-        
-            if(repCount % (tmp.length - 2) != 0) {
+            repCount += 1;
+            if(repCount < tmp.length - 2) {
                 synchronized (eye) {
                     try {
-                            eye.wait();
+                        eye.wait();
                     } catch (InterruptedException e) {}
                 }
             } else {
                 synchronized (eye) {
                     eye.notifyAll();
+                    repCount = 0;
                 }
             }
         }
